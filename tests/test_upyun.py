@@ -24,17 +24,11 @@ def b(s):
 
 import upyun
 
-BUCKET = "zj-files"
-USERNAME = "adm"
-PASSWORD = "aaaaaaaa"
-API = "nW2KBSDEQ93CYoRQSbgBvredqvc="
-SOURCE = "/upyun-python-sdk/test.mp4"
-#BUCKET = os.getenv('UPYUN_BUCKET')
-#USERNAME = os.getenv('UPYUN_USERNAME')
-#PASSWORD = os.getenv('UPYUN_PASSWORD')
-#API = os.getenv('UPYUN_API')
+BUCKET = os.getenv('UPYUN_BUCKET')
+USERNAME = os.getenv('UPYUN_USERNAME')
+PASSWORD = os.getenv('UPYUN_PASSWORD')
+API = os.getenv('UPYUN_API')
 SOURCE = os.getenv('UPYUN_SOURCE') or 'F'
-
 BUCKET_TYPE = os.getenv('UPYUN_BUCKET_TYPE') or 'F'
 
 
