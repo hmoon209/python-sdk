@@ -58,9 +58,9 @@ class TestUpYun(unittest.TestCase):
             except upyun.UpYunServiceException:
                 pass
         self.up.delete(self.root)
-#       with self.assertRaises(upyun.UpYunServiceException) as se:
-#           self.up.getinfo(self.root)
-#           self.assertEqual(se.exception.status, 404)
+        with self.assertRaises(upyun.UpYunServiceException) as se:
+            self.up.getinfo(self.root)
+        self.assertEqual(se.exception.status, 404)
         os.remove('tests/bigfile.txt')
 
     def test_getenv_info(self):
@@ -161,6 +161,33 @@ class TestUpYun(unittest.TestCase):
         self.assertIsInstance(res, dict)
         self.assertEqual(res['file-type'], 'folder')
         self.up.delete(self.root + 'test')
+        with self.assertRaises(upyun.UpYunServiceException) as se:
+            self.up.getinfo(self.root + 'test')
+        self.assertEqual(se.exception.status, 404)
+
+    def test_cd(self):
+        with self.assertRaises(upyun.UpYunClientException) as se:
+            self.up.cd('test//fail')
+        res = self.up.cd(self.root + 'test')
+        self.assertEqual(res, 0)
+
+        res = self.up.usage()
+        self.assertGreaterEqual(int(res), 0)
+        self.up.mkdir('testcd')
+        res = self.up.getinfo('testcd')
+        self.assertIsInstance(res, dict)
+
+        self.up.put('testcd/test.txt', 'abcdefghijklmnopqrstuvwxyz\n')
+        res = self.up.get('testcd/test.txt')
+        self.assertEqual(res, 'abcdefghijklmnopqrstuvwxyz\n')
+        res = self.up.getlist('testcd')
+        self.assertIsInstance(res, list)
+        self.assertEqual(len(res), 1)
+
+        self.up.delete('testcd/test.txt')
+        self.up.delete('testcd')
+        self.up.cd(self.root)
+        self.up.delete('test')
         with self.assertRaises(upyun.UpYunServiceException) as se:
             self.up.getinfo(self.root + 'test')
         self.assertEqual(se.exception.status, 404)
