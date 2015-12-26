@@ -25,14 +25,27 @@ pip install requests
 pip install upyun
 ```
 
+> 升级 UPYUN SDK
+
+```
+pip install —-upgrade upyun
+```
+
+> 安装依赖
+
+```
+pip install -r requirements.txt
+```
+
 > 运行测试用例
 
 ```
 export UPYUN_BUCKET=<bucket>
 export UPYUN_USERNAME=<username>
 export UPYUN_PASSWORD=<password>
+export UPYUN_SECRET=<secret>
 
-make init test
+make test
 ```
 
 ## 基本函数接口
@@ -139,6 +152,8 @@ with open('unix.png', 'rb') as f:
 
 #### 分块上传, 可将大文件拆分成多块并发上传
 
+> 注意: 如果文件大小大于 10M 时推荐使用分块上传, 否则尽量使用 REST 上传, 速度更快。
+
 在上传大文件的时候，面对有可能因为网络质量等其他原因而造成的上传失败，使用分块上传非常有必要。
 
 使用分块上传时，初始化时 `secret` 参数必选。
@@ -201,6 +216,7 @@ up.mkdir('/upyun-python-sdk/temp/')
 
 创建成功，返回 Python `None` 对象; 失败则抛出相应异常。
 
+
 ### 删除目录或文件
 
 ```python
@@ -233,6 +249,15 @@ print item['time'] # 创建时间
 ```
 
 获取失败，则抛出相应的异常。该方法默认获取根目录列表信息。
+
+若目录下存在超大量文件，可以通过指定 `limit` 来控制每次程序每次拉取的文件数(默认为1000)，以及 `order` 来控制文件排列的顺序(`asc` 或 `desc`，按时间升序或降序排列。默认 `desc`)。
+
+```python
+res = up.getlist('/upyun-python-sdk/', limit=5000, order='desc')
+```
+
+获取成功，返回一个包含该目录下所有目录或文件条目信息的 Python List 对象。
+
 
 ### 获取文件信息
 

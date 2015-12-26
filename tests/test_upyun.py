@@ -28,6 +28,7 @@ BUCKET = os.getenv('UPYUN_BUCKET')
 USERNAME = os.getenv('UPYUN_USERNAME')
 PASSWORD = os.getenv('UPYUN_PASSWORD')
 SECRET = os.getenv('UPYUN_SECRET')
+FAST = False
 
 
 def rootpath():
@@ -181,6 +182,22 @@ class TestUpYun(unittest.TestCase):
                                  'name': 'test.png', 'size': '13001'})
         self.up.delete(self.root + 'test')
         self.up.delete(self.root + 'test.png')
+        with self.assertRaises(upyun.UpYunServiceException) as se:
+            self.up.getlist(self.root + 'test')
+        self.assertEqual(se.exception.status, 404)
+
+    @unittest.skipUnless(FAST, 'The transmition speed must be fast')
+    def test_getlargelist(self):
+        ldir = self.root + 'largelist/'
+        for i in range(1200):
+            self.up.put('%s%s_test.txt' % (ldir, uuid.uuid4().hex), 'a')
+        res = self.up.getlist(ldir, limit=500, order='asc')
+        self.assertIsInstance(res, list)
+        self.assertEqual(len(res), 1200)
+        folder_list = [x['name'] for x in res]
+        for item in folder_list:
+            self.up.delete(ldir + item)
+        self.up.delete(ldir)
         with self.assertRaises(upyun.UpYunServiceException) as se:
             self.up.getlist(self.root + 'test')
         self.assertEqual(se.exception.status, 404)
