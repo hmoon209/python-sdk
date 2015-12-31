@@ -214,14 +214,16 @@ class TestUpYun(unittest.TestCase):
         self.assertEqual(se.exception.status, 404)
 
     @unittest.skipUnless(FAST, 'The transmition speed must be fast')
-    def test_getlargelist(self):
+    def test_get_large_list(self):
         ldir = self.root + 'largelist/'
-        for i in range(1200):
+        ret_list = []
+        for i in range(120):
             self.up.put('%s%s_test.txt' % (ldir, uuid.uuid4().hex), 'a')
-        res = self.up.getlist(ldir, limit=500, order='asc')
-        self.assertIsInstance(res, list)
-        self.assertEqual(len(res), 1200)
-        folder_list = [x['name'] for x in res]
+        for res in self.up.get_large_list(ldir, limit=50, order='asc'):
+            ret_list += res
+        self.assertIsInstance(ret_list, list)
+        self.assertEqual(len(ret_list), 120)
+        folder_list = [x['name'] for x in ret_list]
         for item in folder_list:
             self.up.delete(ldir + item)
         self.up.delete(ldir)

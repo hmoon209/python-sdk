@@ -104,22 +104,26 @@ class UpYunRest(object):
         headers = {'Folder': 'true'}
         self.__do_http_request('POST', key, headers=headers)
 
-    def getlist(self, key, limit, order):
-        headers = {'X-List-Limit': limit, 'X-List-Order': order}
-        list_iter = None
-        folder_list = []
-        while list_iter != self.LIST_END:
-            content = self.__do_http_request('GET', key, headers=headers)
-            assert ('head' in content and 'body' in content)
-            if content['body'] == '':
-                break
-            items = content['body'].split('\n')
-            folder_list.extend([dict(zip(['name', 'type', 'size', 'time'],
-                                x.split('\t'))) for x in items])
-            list_iter = content['head']['x-upyun-list-iter']
-            headers['X-List-Iter'] = list_iter
+    def getlist(self, key):
+        _, content = self.__do_http_request('GET', key)
+        if content == '':
+            return []
+        items = content.split('\n')
+        return [dict(zip(['name', 'type', 'size', 'time'],
+                x.split('\t'))) for x in items]
 
-        return folder_list
+    def get_large_list(self, key, limit, order):
+        headers = {'X-List-Limit': limit, 'X-List-Order': order}
+        while headers.get('X-List-Iter') != self.LIST_END:
+            ret_header, content = self.__do_http_request('GET', key,
+                                                         headers=headers)
+            assert ret_header and content
+            if content == '':
+                break
+            headers['X-List-Iter'] = ret_header.get('x-upyun-list-iter')
+            items = content.split('\n')
+            yield [dict(zip(['name', 'type', 'size', 'time'],
+                   x.split('\t'))) for x in items]
 
     def getinfo(self, key):
         h = self.__do_http_request('HEAD', key)
@@ -202,7 +206,7 @@ class UpYunRest(object):
                         break
                     of.write(chunk)
             elif method == 'GET' and 'x-upyun-list-iter' in resp.headers:
-                content = {'head': resp.headers, 'body': resp.text}
+                content = (resp.headers, resp.text)
             elif method == 'GET':
                 content = resp.text
             elif method == 'PUT' or method == 'HEAD':

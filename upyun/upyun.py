@@ -39,7 +39,7 @@ class UpYun(object):
         self.username = username or os.getenv('UPYUN_USERNAME')
         password = password or os.getenv('UPYUN_PASSWORD')
         self.password = (hashlib.md5(b(password)).hexdigest()
-            if password else None)
+                         if password else None)
         self.endpoint = endpoint or ED_AUTO
         self.chunksize = chunksize or DEFAULT_CHUNKSIZE
         self.secret = secret or os.getenv('UPYUN_SECRET')
@@ -127,8 +127,13 @@ class UpYun(object):
 
     @has_object('up_rest')
     @const_path
-    def getlist(self, key='/', limit=1000, order='desc'):
-        return self.up_rest.getlist(key, limit, order)
+    def getlist(self, key='/'):
+        return self.up_rest.getlist(key)
+
+    @has_object('up_rest')
+    @const_path
+    def get_large_list(self, key='/', limit=1000, order='desc'):
+        return self.up_rest.get_large_list(key, limit, order)
 
     @has_object('up_rest')
     @const_path
