@@ -12,20 +12,21 @@ UPYUN Python SDK，集成:
 - [UPYUN 音视频处理接口](http://docs.upyun.com/api/av_pretreatment/)
 
 # Table of Contents
-============================
+---------------------------------------
 
 - [UPYUN Python SDK](#upyun-python-sdk)
 	- [更新说明](#更新说明)
 	- [安装说明](#安装说明)
+	- [Examples](#examples)
 	- [Usage](#usage)
 		- [UPYUN HTTP REST 接口](#upyun-http-rest-接口)
 			- [初始化 UpYun](#初始化-upyun)
-			- [上传文件](#上传文件)
+			- [上传文件](#上传文件-1)
 				- [直接上传](#直接传递文件内容的形式上传)
-				- [流式上传](#数据流方式上传可降低内存占用)
+				- [流式上传](#数据流方式上传)
 			- [下载文件](#下载文件)
 				- [直接下载](#直接读取文件内容)
-				- [流式下载](#使用数据流模式下载节省内存占用)
+				- [流式下载](#数据流模式下载)
 			- [创建目录](#创建目录)
 			- [删除目录活文件](#删除目录或文件)
 			- [获取文件目录列表](#获取文件目录列表)
@@ -33,14 +34,14 @@ UPYUN Python SDK，集成:
 			- [获取空间使用情况](#获取空间使用情况)
 		- [UPYUN 缓存刷新接口](#upyun-缓存刷新接口)
 		- [UPYUN HTTP 表单上传接口](#upyun-http-表单上传接口)
-			- [初始化-upyun_form](#初始化-upyun_form)
-			- [上传文件](#上传文件-1)
-		- [UPYUN 分块上传接口](#upyun-分块上传接口)
-			- [初始化-upyun_multipart](#初始化-upyun_multipart)
+			- [初始化-UpYun_Form](#初始化-upyun_form)
 			- [上传文件](#上传文件-2)
+		- [UPYUN 分块上传接口](#upyun-分块上传接口)
+			- [初始化-UpYun_Multipart](#初始化-upyun_multipart)
+			- [上传文件](#上传文件-3)
 			- [回调签名验证](#表单及分块上传回调签名验证)
 		- [UPYUN 音视频处理接口](#upyun-音视频处理接口)
-			- [初始化 upyun_media](#初始化-upyun_media)
+			- [初始化 UpYun_Media](#初始化-upyun_media)
 			- [进度查询](#任务处理进度查询)
 		- [高级特性](#高级特性)
 			- [自定义数据流大小](#自定义数据流大小)
@@ -92,8 +93,12 @@ export UPYUN_SECRET=<secret>
 make test
 ```
 
+# Examples
+---------------------------------------
+示例代码见 `examples/`。
+
 # Usage
-============================
+---------------------------------------
 
 ## UPYUN HTTP REST 接口
 
@@ -151,7 +156,9 @@ up.put('/upyun-python-sdk/ascii.txt', 'abcdefghijklmnopqrstuvwxyz\n')
 
 其中，方法 `up.put` 默认自动创建相应目录。
 
-#### 数据流方式上传，可降低内存占用
+#### 数据流方式上传
+
+使用数据流方式上传，可降低内存占用
 
 ```python
 headers = { 'x-gmkerl-rotate': '180' }
@@ -180,7 +187,9 @@ res = up.get('/upyun-python-sdk/ascii.txt')
 
 下载成功，返回文件内容; 失败则抛出相应异常。
 
-#### 使用数据流模式下载，节省内存占用
+#### 数据流模式下载
+
+使用数据流模式下载，节省内存占用
 
 ```python
 with open('xinu.png', 'wb') as f:
@@ -302,12 +311,12 @@ up.cd('/upyun/test/')
 
 使用 `UPYUN HTTP 表单上传接口`，用户可直接上传文件到 UPYUN，而不需要通过客户服务器进行中转。
 
-### 初始化 upyun_form
+### 初始化 UpYun_Form
 
 ```python
 import upyun
 
-up = upyun.UpYun('bucket', 'secret')
+up = upyun.UpYun('bucket', secret='secret')
 ```
 
 其中，参数 `bucket` `secret` 分别为空间名称和表单密钥，必选。
@@ -343,12 +352,12 @@ with open('unix.png', 'rb') as f:
 
 > 注意: 如果文件大小大于 10M 时推荐使用分块上传, 否则尽量使用 REST 上传, 速度更快。
 
-### 初始化 upyun_multipart
+### 初始化 UpYun_Multipart
 
 ```python
 import upyun
 
-up = upyun.UpYun('bucket', 'secret')
+up = upyun.UpYun('bucket', secret='secret')
 ```
 
 其中，参数 `bucket` `secret` 分别为空间名称和表单密钥，必选。
@@ -390,7 +399,7 @@ upyun.verify_put_sign(data, secret)
 
 用于处理对已经上传到对应存储空间中的音视频文件，进行转码、HLS 切割、截图、获取视频信息等处理。
 
-### 初始化 upyun_media
+### 初始化 UpYun_Media
 
 ```python
 up = upyun.UpYun('bucket', 'username', 'password')
