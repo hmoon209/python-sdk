@@ -12,7 +12,6 @@ UPYUN Python SDK，集成:
 - [UPYUN 音视频处理接口](http://docs.upyun.com/api/av_pretreatment/)
 
 # Table of Contents
----------------------------------------
 
 - [UPYUN Python SDK](#upyun-python-sdk)
     - [更新说明](#更新说明)
@@ -94,11 +93,9 @@ make test
 ```
 
 # Examples
----------------------------------------
 示例代码见 `examples/`。
 
 # Usage
----------------------------------------
 
 ## UPYUN HTTP REST 接口
 
