@@ -29,4 +29,3 @@ if __name__ == '__main__':
     notify_url = 'http://httpbin.org/post'
     ids = up.pretreat(tasks, source, notify_url)
     print up.status(ids)
-
